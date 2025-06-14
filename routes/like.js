@@ -11,11 +11,12 @@ router.post("/:postId/likes", async (req, res) => {
     "INSERT INTO likes (post_id, user_id) VALUES ($1, $2) RETURNING *",
     [req.params.postId, user_id]
   );
-  res.status(201).json((message = "Like added"));
+  res.status(201).json({ message: "Like added" });
 });
 
-/*GET /api/posts/:postId/likes*/
+/*DELETE /api/posts/:postId/likes*/
 router.delete("/:postId/likes", async (req, res) => {
+  const { user_id } = req.body;
   const result = await pgclient.query(
     "DELETE FROM likes WHERE post_id = $1 AND user_id = $2 RETURNING *",
     [req.params.postId, user_id]
@@ -26,7 +27,7 @@ router.delete("/:postId/likes", async (req, res) => {
   res.json({ message: "Like Removed" });
 });
 
-/*GET /api/posts/:postId/likes*/
+/*DELETE /api/posts/:postId/likes*/
 router.get("/:postId/likes", async (req, res) => {
   const result = await pgclient.query(
     "SELECT COUNT(*) AS count FROM likes WHERE post_id = $1",
