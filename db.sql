@@ -28,3 +28,9 @@ CREATE TABLE topics (
   id   SERIAL PRIMARY KEY,
   name VARCHAR(80) UNIQUE NOT NULL
 );
+
+CREATE TABLE likes (
+  post_id   INTEGER NOT NULL REFERENCES posts(id)  ON DELETE CASCADE,
+  user_id   INTEGER NOT NULL REFERENCES users(id)  ON DELETE CASCADE,
+  PRIMARY KEY (post_id, user_id)
+);
