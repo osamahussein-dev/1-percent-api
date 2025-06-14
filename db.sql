@@ -16,3 +16,10 @@ CREATE TABLE posts (
   created_at TIMESTAMPTZ  DEFAULT now()
 );
 
+CREATE TABLE comments (
+  id         SERIAL Primary KEY,
+  post_id    INTEGER NOT NULL REFERENCES posts(id)  ON DELETE CASCADE,
+  author_id  INTEGER NOT NULL REFERENCES users(id)  ON DELETE CASCADE,
+  body       TEXT    NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
