@@ -6,3 +6,13 @@ CREATE TABLE users (
   phone   VARCHAR(255) NOT NULL,
   role     VARCHAR(20) DEFAULT 'user'
 );
+
+CREATE TABLE posts (
+  id         SERIAL PRIMARY KEY,
+  author_id  INTEGER      NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title      VARCHAR(150) NOT NULL,
+  body       TEXT         NOT NULL,
+  topic      VARCHAR(80)  NOT NULL,
+  created_at TIMESTAMPTZ  DEFAULT now()
+);
+

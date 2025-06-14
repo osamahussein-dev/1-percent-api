@@ -5,6 +5,7 @@ import cors from "cors";
 import userRoutes from "./routes/users.js";
 import authRoutes from "./routes/auth.js";
 import pgclient from "./db.js";
+import postRoutes from "./routes/posts.js";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 /*Route mounts*/
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/posts", postRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Welcome to your first API server");
