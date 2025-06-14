@@ -8,6 +8,7 @@ import pgclient from "./db.js";
 import postRoutes from "./routes/posts.js";
 import commentRoutes from "./routes/comments.js";
 import topicRoutes from "./routes/topics.js";
+import likeRoutes from "./routes/like.js";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/posts", commentRoutes);
 app.use("/api/topics", topicRoutes);
+app.use("/api/posts", likeRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Welcome to your first API server");
