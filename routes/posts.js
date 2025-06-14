@@ -6,6 +6,12 @@ const router = express.Router();
 /*POST /api/posts*/
 router.post("/", async (req, res) => {
   const { author_id, title, body, topic } = req.body;
+  const ok = await pgclient.query("SELECT 1 FROM topics WHERE name = $1", [
+    topic,
+  ]);
+  if (ok.rows.length === 0) {
+    return res.status(400).json({ message: "Topic not found" });
+  }
   const result = await pgclient.query(
     "INSERT INTO posts (author_id, title, body, topic) VALUES ($1, $2, $3, $4) RETURNING *",
     [author_id, title, body, topic]

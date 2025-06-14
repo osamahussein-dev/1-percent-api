@@ -23,3 +23,8 @@ CREATE TABLE comments (
   body       TEXT    NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+CREATE TABLE topics (
+  id   SERIAL PRIMARY KEY,
+  name VARCHAR(80) UNIQUE NOT NULL
+);
