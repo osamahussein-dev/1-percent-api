@@ -5,16 +5,18 @@ const router = express.Router();
 
 /*POST /api/posts*/
 router.post("/", async (req, res) => {
-  const { author_id, title, body, topic } = req.body;
-  const ok = await pgclient.query("SELECT 1 FROM topics WHERE name = $1", [
-    topic,
+  const { author_id, title, body, topic_id } = req.body;
+  const ok = await pgclient.query("SELECT 1 FROM topics WHERE id = $1", [
+    topic_id,
   ]);
+
   if (ok.rows.length === 0) {
     return res.status(400).json({ message: "Topic not found" });
   }
+
   const result = await pgclient.query(
-    "INSERT INTO posts (author_id, title, body, topic) VALUES ($1, $2, $3, $4) RETURNING *",
-    [author_id, title, body, topic]
+    "INSERT INTO posts (author_id, title, body, topic_id) VALUES ($1, $2, $3, $4) RETURNING *",
+    [author_id, title, body, topic_id]
   );
 
   await pgclient.query(
@@ -48,6 +50,12 @@ router.delete("/:id", async (req, res) => {
     "DELETE FROM posts WHERE id = $1 RETURNING *",
     [req.params.id]
   );
+
+  await pgclient.query(
+    "UPDATE user_details SET cards_count = cards_count - 1 WHERE user_id = $1",
+    [owner.rows[0].author_id]
+  );
+
   res.json({ message: "Post deleted", post: deleted.rows[0] });
 });
 
@@ -64,7 +72,7 @@ router.get("/:id", async (req, res) => {
 
 /* PUT /api/posts/:id*/
 router.put("/:id", async (req, res) => {
-  const { author_id, title, body, topic } = req.body;
+  const { author_id, title, body, topic_id } = req.body;
   const owner = await pgclient.query(
     "SELECT author_id FROM posts WHERE id = $1",
     [req.params.id]
@@ -76,7 +84,7 @@ router.put("/:id", async (req, res) => {
     return res.status(403).json({ message: "Not your post" });
   }
   const updated = await pgclient.query(
-    "UPDATE posts SET title = $1, body = $2, topic = $3 WHERE id = $4 RETURNING *",
+    "UPDATE posts SET title = $1, body = $2, topic_id = $3 WHERE id = $4 RETURNING *",
     [title, body, topic, req.params.id]
   );
   res.json(updated.rows[0]);
