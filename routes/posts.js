@@ -16,6 +16,12 @@ router.post("/", async (req, res) => {
     "INSERT INTO posts (author_id, title, body, topic) VALUES ($1, $2, $3, $4) RETURNING *",
     [author_id, title, body, topic]
   );
+
+  await pgclient.query(
+    "UPDATE userDetails SET cards_count = cards_count + 1 WHERE user_id = $1",
+    [author_id]
+  );
+
   res.json(result.rows[0]);
 });
 

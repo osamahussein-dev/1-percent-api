@@ -34,3 +34,11 @@ CREATE TABLE likes (
   user_id   INTEGER NOT NULL REFERENCES users(id)  ON DELETE CASCADE,
   PRIMARY KEY (post_id, user_id)
 );
+
+CREATE TABLE user_details (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  cards_count INTEGER DEFAULT 0,
+  followers_count INTEGER DEFAULT 0,
+  following_count INTEGER DEFAULT 0
+);
