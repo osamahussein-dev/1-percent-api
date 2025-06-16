@@ -23,8 +23,10 @@ router.post("/", async (req, res) => {
 
 /*GET /api/topics*/
 router.get("/", async (_req, res) => {
-  const result = await pgclient.query("SELECT name FROM topics ORDER BY name");
-  res.json(result.rows.map((row) => row.name));
+  const result = await pgclient.query(
+    "SELECT id, name FROM topics ORDER BY name"
+  );
+  res.json(result.rows);
 });
 
 export default router;

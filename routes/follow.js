@@ -8,7 +8,7 @@ router.post("/follow", async (req, res) => {
   const { follower_id, following_id } = req.body;
 
   const alreadyFollowing = await pgclient.query(
-    "SELECT * FROM followers WHERE follower_id = $1 AND following_id = $2",
+    "SELECT 1 FROM follows WHERE follower_id = $1 AND following_id = $2",
     [follower_id, following_id]
   );
   if (alreadyFollowing.rows.length > 0) {
@@ -18,17 +18,17 @@ router.post("/follow", async (req, res) => {
   }
 
   await pgclient.query(
-    "INSERT INTO followers (follower_id, following_id) VALUES ($1, $2)",
+    "INSERT INTO follows (follower_id, following_id) VALUES ($1,$2)",
     [follower_id, following_id]
   );
 
   await pgclient.query(
-    "UPDATE userDetails SET following_count = following_count + 1 WHERE user_id = $1",
+    "UPDATE user_details SET following_count = following_count + 1 WHERE user_id = $1",
     [follower_id]
   );
 
   await pgclient.query(
-    "UPDATE userDetails SET followers_count = followers_count + 1 WHERE user_id = $1",
+    "UPDATE user_details SET followers_count = followers_count + 1 WHERE user_id = $1",
     [following_id]
   );
 
@@ -40,7 +40,7 @@ router.post("/unfollow", async (req, res) => {
   const { follower_id, following_id } = req.body;
 
   const isFollowing = await pgclient.query(
-    "SELECT * FROM followers WHERE follower_id = $1 AND following_id = $2",
+    "SELECT 1 FROM follows WHERE follower_id = $1 AND following_id = $2",
     [follower_id, following_id]
   );
   if (isFollowing.rows.length === 0) {
@@ -48,17 +48,17 @@ router.post("/unfollow", async (req, res) => {
   }
 
   await pgclient.query(
-    "DELETE FROM followers WHERE follower_id = $1 AND following_id = $2",
+    "DELETE FROM follows WHERE follower_id = $1 AND following_id = $2",
     [follower_id, following_id]
   );
 
   await pgclient.query(
-    "UPDATE userDetails SET following_count = following_count - 1 WHERE user_id = $1",
+    "UPDATE user_details SET following_count = following_count - 1 WHERE user_id = $1",
     [follower_id]
   );
 
   await pgclient.query(
-    "UPDATE userDetails SET followers_count = followers_count - 1 WHERE user_id = $1",
+    "UPDATE user_details SET followers_count = followers_count - 1 WHERE user_id = $1",
     [following_id]
   );
 

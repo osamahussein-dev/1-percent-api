@@ -20,7 +20,11 @@ router.get("/:id", async (req, res) => {
   if (result.rows.length === 0) {
     return res.status(404).json({ message: "User not found" });
   }
-  res.json(result.rows[0]);
+  const acc = await pgclient.query(
+    "SELECT cards_count, followers_count, following_count FROM user_details WHERE user_id = $1",
+    [req.params.id]
+  );
+  +res.json({ ...result.rows[0], ...acc.rows[0] });
 });
 
 export default router;

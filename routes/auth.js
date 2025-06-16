@@ -18,6 +18,9 @@ router.post("/signup", async (req, res) => {
     "INSERT INTO users (name, email, password, phone, role) VALUES ($1, $2, $3, $4, $5) RETURNING *",
     [name, email, password, phone, role || "user"]
   );
+  await pgclient.query("INSERT INTO user_details (user_id) VALUES ($1)", [
+    newUser.rows[0].id,
+  ]);
   res.status(201).json(newUser.rows[0]);
 });
 
