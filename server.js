@@ -9,6 +9,7 @@ import postRoutes from "./routes/posts.js";
 import commentRoutes from "./routes/comments.js";
 import topicRoutes from "./routes/topics.js";
 import likeRoutes from "./routes/like.js";
+import followRoutes from "./routes/follow.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/posts", commentRoutes);
 app.use("/api/topics", topicRoutes);
 app.use("/api/posts", likeRoutes);
+app.use("/api/follow", followRoutes);
 
 app.get("/", (_req, res) => {
   res.send("Welcome to your first API server");
