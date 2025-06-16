@@ -24,7 +24,61 @@ router.get("/:id", async (req, res) => {
     "SELECT cards_count, followers_count, following_count FROM user_details WHERE user_id = $1",
     [req.params.id]
   );
-  +res.json({ ...result.rows[0], ...acc.rows[0] });
+  res.json({ ...result.rows[0], ...acc.rows[0] });
+});
+
+/* PUT /api/users/:id*/
+router.put("/:id", async (req, res) => {
+  const { name, email, phone, bio } = req.body;
+  const userId = req.params.id;
+
+  const userResult = await pgclient.query("SELECT * FROM users WHERE id = $1", [
+    userId,
+  ]);
+  if (userResult.rows.length === 0) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  const user = userResult.rows[0];
+
+  await pgclient.query(
+    "UPDATE users SET name = $1, email = $2, phone = $3, bio = $4 WHERE id = $5",
+    [
+      name || user.name,
+      email || user.email,
+      phone || user.phone,
+      bio || user.bio,
+      userId,
+    ]
+  );
+
+  res.json({ message: "Profile Ppdated Successfully" });
+});
+
+/* POST /api/users/:id/change-password*/
+router.post("/:id/change-password", async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const userId = req.params.id;
+
+  const userResult = await pgclient.query("SELECT * FROM users WHERE id = $1", [
+    userId,
+  ]);
+  if (userResult.rows.length === 0) {
+    return res.status(404).json({ message: "User Not Found" });
+  }
+
+  const user = userResult.rows[0];
+
+  if (user.password !== currentPassword) {
+    return res.status(400).json({ message: "Incorrect Current Password" });
+  }
+
+  await pgclient.query("UPDATE users SET password = $1 WHERE id = $2", [
+    newPassword,
+    userId,
+  ]);
+
+  res.json({ message: "Password Updated Successfully" });
 });
 
 export default router;
