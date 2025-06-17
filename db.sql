@@ -20,6 +20,7 @@ CREATE TABLE posts
      author_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
      title      VARCHAR(150) NOT NULL,
      body       TEXT NOT NULL,
+     likes_count  INTEGER DEFAULT 0,
      topic_id   INTEGER NOT NULL REFERENCES topics(id) ON DELETE CASCADE,
      created_at TIMESTAMPTZ DEFAULT Now()
   );
