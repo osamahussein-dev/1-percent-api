@@ -27,7 +27,9 @@ router.get("/:id", async (req, res) => {
   res.json({
     ...result.rows[0],
     stats: {
-      ...acc.rows[0],
+      cards_count: acc.rows[0]?.cards_count || 0,
+      followers_count: acc.rows[0]?.followers_count || 0,
+      following_count: acc.rows[0]?.following_count || 0,
     },
   });
 });

@@ -19,10 +19,22 @@ router.post("/", async (req, res) => {
     [author_id, title, body, topic_id]
   );
 
-  await pgclient.query(
-    "UPDATE user_details SET cards_count = cards_count + 1 WHERE user_id = $1",
+  const hasUserDetails = await pgclient.query(
+    "SELECT 1 FROM user_details WHERE user_id = $1",
     [author_id]
   );
+
+  if (hasUserDetails.rows.length) {
+    await pgclient.query(
+      "UPDATE user_details SET cards_count = cards_count + 1 WHERE user_id = $1",
+      [author_id]
+    );
+  } else {
+    await pgclient.query(
+      "INSERT INTO user_details (user_id, cards_count, followers_count, following_count) VALUES ($1, 1, 0, 0)",
+      [author_id]
+    );
+  }
 
   res.json(result.rows[0]);
 });
@@ -48,6 +60,16 @@ router.get("/", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
+  const currentUserId = req.headers["user-id"];
+  const currentUser = await pgclient.query(
+    "SELECT role FROM users WHERE id = $1",
+    [currentUserId]
+  );
+
+  if (currentUser.rows.length === 0) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
   const owner = await pgclient.query(
     "SELECT author_id FROM posts WHERE id = $1",
     [req.params.id]
@@ -55,7 +77,11 @@ router.delete("/:id", async (req, res) => {
   if (owner.rows.length === 0) {
     return res.status(404).json({ message: "Post not found" });
   }
-  if (owner.rows[0].author_id !== Number(req.body.author_id)) {
+
+  if (
+    owner.rows[0].author_id !== Number(currentUserId) &&
+    currentUser.rows[0].role !== "admin"
+  ) {
     return res.status(403).json({ message: "Not your post" });
   }
   const deleted = await pgclient.query(
