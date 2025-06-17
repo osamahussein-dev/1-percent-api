@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
 
 /*GET /api/posts*/
 router.get("/", async (req, res) => {
-  const { author_id } = req.query;
+  const { author_id, topic_id } = req.query;
   const result = await pgclient.query(
     `SELECT 
       posts.*,
@@ -51,10 +51,13 @@ router.get("/", async (req, res) => {
      FROM posts
      LEFT JOIN users on users.id = posts.author_id
      LEFT JOIN topics ON topics.id = posts.topic_id
-     ${author_id ? "WHERE posts.author_id = $1" : ""}
+     WHERE
+       ($1::int IS NULL OR posts.author_id = $1) AND             
+       ($2::int IS NULL OR posts.topic_id = $2) AND
+        1=1
      ORDER BY posts.created_at DESC
      `,
-    author_id ? [author_id] : []
+    [author_id ? Number(author_id) : null, topic_id ? Number(topic_id) : null]
   );
   res.json(result.rows);
 });
