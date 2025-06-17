@@ -11,20 +11,33 @@ router.post("/:postId/comments", async (req, res) => {
     "INSERT INTO comments (post_id, author_id, body) VALUES ($1, $2, $3) RETURNING *",
     [req.params.postId, author_id, body]
   );
-  res.status(201).json(result.rows[0]);
+
+  const commentWithAuthor = await pgclient.query(
+    `SELECT comments.*, users.name as author_name 
+     FROM comments 
+     LEFT JOIN users ON users.id = comments.author_id 
+     WHERE comments.id = $1`,
+    [result.rows[0].id]
+  );
+
+  res.status(201).json(commentWithAuthor.rows[0]);
 });
 
 /*GET /api/posts/:postId/comments*/
 router.get("/:postId/comments", async (req, res) => {
   const result = await pgclient.query(
-    "SELECT * FROM comments WHERE post_id = $1 ORDER BY created_at ASC",
+    `SELECT comments.*, users.name as author_name 
+     FROM comments 
+     LEFT JOIN users ON users.id = comments.author_id 
+     WHERE post_id = $1 
+     ORDER BY comments.created_at ASC`,
     [req.params.postId]
   );
   res.json(result.rows);
 });
 
 /*DELETE /api/comments/:id*/
-router.delete("/comments/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const owner = await pgclient.query(
     "SELECT author_id FROM comments WHERE id = $1",
     [req.params.id]

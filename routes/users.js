@@ -36,7 +36,7 @@ router.get("/:id", async (req, res) => {
 
 /* PUT /api/users/:id*/
 router.put("/:id", async (req, res) => {
-  const { name, email, phone, bio } = req.body;
+  const { name, email, phone } = req.body;
   const userId = req.params.id;
 
   const userResult = await pgclient.query("SELECT * FROM users WHERE id = $1", [
@@ -49,17 +49,16 @@ router.put("/:id", async (req, res) => {
   const user = userResult.rows[0];
 
   await pgclient.query(
-    "UPDATE users SET name = $1, email = $2, phone = $3, bio = $4 WHERE id = $5",
+    "UPDATE users SET name = $1, email = $2, phone = $3 WHERE id = $4",
     [
       name || user.name,
       email || user.email,
       phone || user.phone,
-      bio || user.bio,
       userId,
     ]
   );
 
-  res.json({ message: "Profile Ppdated Successfully" });
+  res.json({ message: "Profile Updated Successfully" });
 });
 
 /* POST /api/users/:id/change-password*/
