@@ -33,7 +33,7 @@ router.post("/login", async (req, res) => {
     [email, password]
   );
   if (result.rows.length === 0) {
-    return res.status(401).json({ message: "Invalid credentials" });
+    return res.status(401).json({ message: "Invalid Email or Password" });
   }
   res.json(result.rows[0]);
 });

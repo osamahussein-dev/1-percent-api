@@ -15,12 +15,12 @@ router.post("/", async (req, res) => {
   }
 
   const result = await pgclient.query(
-    "INSERT INTO posts (author_id, title, body, topic_id) VALUES ($1, $2, $3, $4) RETURNING *",
+    "INSERT INTO posts (id, author_id, title, body, topic_id, created_at) VALUES (DEFAULT, $1, $2, $3, $4, NOW()) RETURNING *",
     [author_id, title, body, topic_id]
   );
 
   await pgclient.query(
-    "UPDATE userDetails SET cards_count = cards_count + 1 WHERE user_id = $1",
+    "UPDATE user_details SET cards_count = cards_count + 1 WHERE user_id = $1",
     [author_id]
   );
 
@@ -28,9 +28,21 @@ router.post("/", async (req, res) => {
 });
 
 /*GET /api/posts*/
-router.get("/", async (_req, res) => {
+router.get("/", async (req, res) => {
+  const { author_id } = req.query;
   const result = await pgclient.query(
-    "SELECT * FROM posts ORDER BY created_at DESC"
+    `SELECT 
+      posts.*,
+      users.name AS author_name,
+      users.email AS author_email,
+      topics.name AS topic_name
+     FROM posts
+     LEFT JOIN users on users.id = posts.author_id
+     LEFT JOIN topics ON topics.id = posts.topic_id
+     ${author_id ? "WHERE posts.author_id = $1" : ""}
+     ORDER BY posts.created_at DESC
+     `,
+    author_id ? [author_id] : []
   );
   res.json(result.rows);
 });

@@ -24,7 +24,12 @@ router.get("/:id", async (req, res) => {
     "SELECT cards_count, followers_count, following_count FROM user_details WHERE user_id = $1",
     [req.params.id]
   );
-  res.json({ ...result.rows[0], ...acc.rows[0] });
+  res.json({
+    ...result.rows[0],
+    stats: {
+      ...acc.rows[0],
+    },
+  });
 });
 
 /* PUT /api/users/:id*/
