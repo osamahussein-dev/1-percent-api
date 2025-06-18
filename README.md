@@ -71,40 +71,333 @@ The API will be available at `http://localhost:3000`
 ## API Endpoints
 
 ### Authentication
-- `POST /auth/register` - Register new user
-- `POST /auth/login` - User login
-- `POST /auth/logout` - User logout
+#### Register New User
+```http
+POST /auth/register
+
+{
+  "name": "Osama Hussein",
+  "email": "osama@gmail.com",
+  "password": "securePassword123",
+  "phone": "1234567890"
+}
+
+{
+  "id": 1,
+  "name": "Osama Hussein",
+  "email": "osama@gmail.com"
+}
+```
+
+#### User Login
+```http
+POST /auth/login
+
+{
+  "email": "osama@gmail.com",
+  "password": "securePassword123"
+}
+
+{
+  "id": 1,
+  "name": "Osama Hussein",
+  "email": "osama@gmail.com",
+  "token": "user_auth_token"
+}
+```
 
 ### Users
-- `GET /users/:id` - Get user profile
-- `PUT /users/:id` - Update user profile
-- `PUT /users/:id/password` - Update password
+#### Get User Profile
+```http
+GET /users/1
+
+{
+  "id": 1,
+  "name": "Osama Hussein",
+  "email": "osama@gmail.com",
+  "phone": "1234567890",
+  "posts_count": 10,
+  "followers_count": 50,
+  "following_count": 30
+}
+```
+
+#### Update User Profile
+```http
+PUT /users/1
+
+{
+  "name": "Osama Hussein",
+  "email": "osama.hussein@gmail.com",
+  "phone": "0987654321"
+}
+
+{
+  "id": 1,
+  "name": "Osama Hussein",
+  "email": "osama.hussein@gmail.com",
+  "phone": "0987654321"
+}
+```
+
+#### Update Password
+```http
+PUT /users/1/password
+
+{
+  "currentPassword": "oldPassword123",
+  "newPassword": "newPassword123"
+}
+
+{
+  "message": "Password updated successfully"
+}
+```
 
 ### Posts
-- `POST /posts` - Create new post
-- `GET /posts` - Get all posts
-- `GET /posts/:id` - Get specific post
-- `DELETE /posts/:id` - Delete post
-- `GET /posts/topic/:topic` - Get posts by topic
+#### Create New Post
+```http
+POST /posts
+
+{
+  "title": "My First Post",
+  "content": "This is my first post about programming",
+  "topics": ["technology", "programming"]
+}
+
+{
+  "id": 1,
+  "title": "My First Post",
+  "content": "This is my first post about programming",
+  "topics": ["technology", "programming"],
+  "created_at": "2024-03-20T10:00:00Z",
+  "author": {
+    "id": 1,
+    "name": "Osama Hussein"
+  }
+}
+```
+
+#### Get All Posts
+```http
+GET /posts
+
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "My First Post",
+      "content": "This is my first post about programming",
+      "topics": ["technology", "programming"],
+      "created_at": "2024-03-20T10:00:00Z",
+      "author": {
+        "id": 1,
+        "name": "Osama Hussein"
+      },
+      "likes_count": 5,
+      "comments_count": 2
+    }
+  ]
+}
+```
+
+#### Get Posts by Topic
+```http
+GET /posts/topic/technology
+
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "My First Post",
+      "content": "This is my first post about programming",
+      "topics": ["technology", "programming"],
+      "created_at": "2024-03-20T10:00:00Z",
+      "author": {
+        "id": 1,
+        "name": "Osama Hussein"
+      }
+    }
+  ]
+}
+```
 
 ### Comments
-- `POST /comments` - Add comment
-- `GET /comments/:postId` - Get post comments
-- `DELETE /comments/:id` - Delete comment
+#### Add Comment
+```http
+POST /comments
+
+{
+  "post_id": 1,
+  "content": "Great post about programming!"
+}
+
+{
+  "id": 1,
+  "content": "Great post about programming!",
+  "user_id": 1,
+  "user_name": "Osama Hussein",
+  "post_id": 1,
+  "created_at": "2024-03-20T11:00:00Z"
+}
+```
+
+#### Get Post Comments
+```http
+GET /comments/1
+
+{
+  "comments": [
+    {
+      "id": 1,
+      "content": "Great post about programming!",
+      "user": {
+        "id": 1,
+        "name": "Osama Hussein"
+      },
+      "created_at": "2024-03-20T11:00:00Z"
+    }
+  ]
+}
+```
 
 ### Likes
-- `POST /like/:postId` - Like post
-- `DELETE /like/:postId` - Unlike post
+#### Like Post
+```http
+POST /like/1
+
+{
+  "message": "Post liked successfully",
+  "likes_count": 6,
+  "liked_by": {
+    "id": 1,
+    "name": "Osama Hussein"
+  }
+}
+```
+
+#### Unlike Post
+```http
+DELETE /like/1
+
+{
+  "message": "Post unliked successfully",
+  "likes_count": 5,
+  "unliked_by": {
+    "id": 1,
+    "name": "Osama Hussein"
+  }
+}
+```
 
 ### Topics
-- `GET /topics` - Get all topics
-- `GET /topics/:id/posts` - Get posts by topic
+#### Get All Topics
+```http
+GET /topics
+
+{
+  "topics": [
+    {
+      "id": 1,
+      "name": "technology",
+      "posts_count": 15
+    },
+    {
+      "id": 2,
+      "name": "programming",
+      "posts_count": 10
+    }
+  ]
+}
+```
+
+#### Get Posts by Topic
+```http
+GET /topics/1/posts
+
+{
+  "topic": "technology",
+  "posts": [
+    {
+      "id": 1,
+      "title": "My First Post",
+      "content": "This is my first post about programming",
+      "created_at": "2024-03-20T10:00:00Z",
+      "author": {
+        "id": 1,
+        "name": "Osama Hussein"
+      }
+    }
+  ]
+}
+```
 
 ### Follow
-- `POST /follow/:userId` - Follow user
-- `DELETE /follow/:userId` - Unfollow user
-- `GET /follow/:userId/followers` - Get user followers
-- `GET /follow/:userId/following` - Get user following
+#### Follow User
+```http
+POST /follow/2
+
+{
+  "message": "Successfully followed user",
+  "follower": {
+    "id": 1,
+    "name": "Osama Hussein"
+  },
+  "followers_count": 51
+}
+```
+
+#### Unfollow User
+```http
+DELETE /follow/2
+
+{
+  "message": "Successfully unfollowed user",
+  "unfollower": {
+    "id": 1,
+    "name": "Osama Hussein"
+  },
+  "followers_count": 50
+}
+```
+
+#### Get User Followers
+```http
+GET /follow/1/followers
+
+{
+  "user": {
+    "id": 1,
+    "name": "Osama Hussein"
+  },
+  "followers": [
+    {
+      "id": 2,
+      "name": "Jane Doe",
+      "email": "jane@example.com"
+    }
+  ]
+}
+```
+
+#### Get User Following
+```http
+GET /follow/1/following
+
+{
+  "user": {
+    "id": 1,
+    "name": "Osama Hussein"
+  },
+  "following": [
+    {
+      "id": 3,
+      "name": "Bob Smith",
+      "email": "bob@example.com"
+    }
+  ]
+}
+```
 
 ## Database Schema
 
