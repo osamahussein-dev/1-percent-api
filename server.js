@@ -24,7 +24,7 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
-app.use("/api/comments", commentRoutes);
+app.use("/api/posts", commentRoutes);
 app.use("/api/topics", topicRoutes);
 app.use("/api/posts", likeRoutes);
 app.use("/api/follow", followRoutes);
