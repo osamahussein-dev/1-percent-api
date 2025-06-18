@@ -58,3 +58,36 @@ CREATE TABLE follows
      PRIMARY KEY (follower_id, following_id),
      CONSTRAINT no_self_follow CHECK (follower_id <> following_id)
   );
+
+INSERT INTO users (name, email, password, phone, role) VALUES
+('Osama Hussein', 'osama@gmail.com', '123456', '1234567890', 'admin'),
+('Jane Smith', 'jane@gmail.com', '123456', '0987654321', 'user');
+
+INSERT INTO topics (name) VALUES
+('Technology'),
+('Programming'),
+('Web Development'),
+('Mobile Development');
+
+INSERT INTO user_details (user_id, cards_count, followers_count, following_count) VALUES
+(1, 5, 100, 50),
+(2, 3, 75, 30);
+
+INSERT INTO posts (author_id, title, body, topic_id, likes_count) VALUES
+(1, 'Getting Started with React', 'React is a powerful library for building user interfaces. Here are some tips to get started...', 1, 25),
+(2, 'Mobile App Development Tips', 'Here are some essential tips for developing mobile applications...', 4, 15),
+(1, 'Web Development Best Practices', 'Learn the best practices for modern web development...', 3, 30);
+
+INSERT INTO comments (post_id, author_id, body) VALUES
+(1, 2, 'Great introduction to React! Very helpful for beginners.'),
+(1, 1, 'Thanks! Glad you found it helpful.'),
+(2, 1, 'These mobile development tips are really useful!');
+
+INSERT INTO likes (post_id, user_id) VALUES
+(1, 2),
+(2, 1),
+(3, 2);
+
+INSERT INTO follows (follower_id, following_id) VALUES
+(2, 1),
+(1, 2);
